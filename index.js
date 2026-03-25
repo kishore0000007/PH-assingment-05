@@ -1,5 +1,5 @@
 
- /*document.getElementById("login_form").addEventListener("submit", function (e) {
+ document.getElementById("login_form").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const username = document.getElementById("username").value.trim();
@@ -15,7 +15,7 @@
         alert("Invalid Username or Password ");
     }
 });
-*/
+
 
       // ================= ELEMENTS =================
 // ================= ELEMENTS =================
