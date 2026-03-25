@@ -4,8 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Git Hub issues tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
+     <body>
+
+<!-- ================= LOGIN PAGE ================= -->
+<section id="login_page">
+
+  <div class="flex flex-col items-center justify-center py-20 gap-4">
+    <img class="mb-4" src="./assets/github-logo.png" alt="">
+    <h1 class="text-4xl font-bold">GitHub Issues Tracker</h1>
+    <h2 class="text-2xl text-gray-400">Sign in to manage your issues</h2>
+  </div>
+
+  <div class="flex flex-col items-center justify-center">
+    <form id="login_form" class="flex flex-col gap-4">
+      
+      <h2>Username</h2>
+      <input type="text" id="username" placeholder="Username"
+        class="input input-bordered h-[50px] w-[456px]" />
+
+      <h2>Password</h2>
+      <input type="password" id="password" placeholder="Password"
+        class="input input-bordered h-[50px] w-[456px]" />
+
+      <button type="submit"
+        class="btn btn-primary h-[50px] w-[456px] text-2xl mt-4">
+        Login
+      </button>
+
+    </form>
+  </div>
+
+</section>
+
+
+ 
+<section id="dashboard" class="">
+
+  <!-- Navbar -->
+  <div class="flex items-center justify-between px-10 py-4 bg-white shadow-sm">
+    <div class="flex items-center gap-2">
+      <img src="./assets/github-logo.png" class="h-8" alt="">
+      <h2 class="text-xl font-bold text-gray-800">GitHub Issues Tracker</h2>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <input type="text" placeholder="Search Issues..."
+        class="input input-bordered w-40 md:w-auto" />
+      <button class="btn btn-primary">+ New Issue</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex gap-2 w-[1100px] mt-6 ml-60">
+    <button class="btn btn-soft btn-primary w-[120px]">All</button>
+    <button class="btn btn-soft w-[120px]">Open</button>
+    <button class="btn btn-soft w-[120px]">Closed</button>
+  </div>
+
+  <!-- Header -->
+  <div class="flex items-center gap-4 w-[1100px] ml-60 mt-6">
     
+    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100">
+      <img src="./assets/Aperture.png" class="w-6 h-6" alt="">
+    </div>
+
+    <div class="flex flex-col">
+      <h1 class="text-2xl font-semibold text-gray-800">50 Issues</h1>
+      <p class="text-gray-500 text-sm">
+        Track and manage your project issues
+      </p>
+    </div>
+
+    <div class="flex ml-auto gap-4">
+      <h2 class="flex items-center gap-1 text-sm">
+        <span class="w-2 h-2 bg-green-500 rounded-full"></span> Open
+      </h2>
+      <h2 class="flex items-center gap-1 text-sm">
+        <span class="w-2 h-2 bg-purple-500 rounded-full"></span> Closed
+      </h2>
+    </div>
+
+  </div>
+
+</section>
+
+<script src="index.js"></script>
 </body>
 </html>
