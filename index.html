@@ -1,139 +1,84 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GitHub Issues Tracker</title>
-
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
 </head>
-
 <body class="bg-gray-100 font-[Geist]">
 
-<!-- ================= LOGIN PAGE ================= -->
-<section id="login_page" >
-
+<section id="login_page">
   <div class="flex flex-col items-center justify-center py-20 gap-4">
     <img class="mb-4 w-16" src="./assets/github-logo.png" alt="">
     <h1 class="text-4xl font-bold">GitHub Issues Tracker</h1>
     <h2 class="text-2xl text-gray-400">Sign in to manage your issues</h2>
   </div>
-
   <div class="flex flex-col items-center justify-center">
     <form id="login_form" class="flex flex-col gap-4">
-      
       <h2>Username</h2>
-      <input type="text" id="username" placeholder="Username"
-        class="input input-bordered h-[50px] w-[456px]" />
-
+      <input type="text" id="username" placeholder="Username" class="input input-bordered h-[50px] w-[456px]" />
       <h2>Password</h2>
-      <input type="password" id="password" placeholder="Password"
-        class="input input-bordered h-[50px] w-[456px]" />
-
-      <button type="submit"
-        class="btn btn-primary h-[50px] w-[456px] text-2xl mt-4">
-        Login
-      </button>
-
+      <input type="password" id="password" placeholder="Password" class="input input-bordered h-[50px] w-[456px]" />
+      <button type="submit" class="btn btn-primary h-[50px] w-[456px] text-2xl mt-4">Login</button>
     </form>
   </div>
-
 </section>
 
-
-<!-- ================= DASHBOARD ================= -->
 <section id="dashboard" class="hidden">
-
-  <!-- Navbar -->
   <div class="flex items-center justify-between px-10 py-4 bg-white shadow-sm">
     <div class="flex items-center gap-2">
       <img src="./assets/github-logo.png" class="h-8" alt="">
       <h2 class="text-xl font-bold text-gray-800">GitHub Issues Tracker</h2>
     </div>
-
     <div class="flex items-center gap-3">
-        <input id="searchInput" type="text" placeholder="Search Issues..." class="input input-bordered w-40 md:w-auto" />
-<button id="searchBtn" class="btn btn-primary">Search</button>
-
+      <input id="searchInput" type="text" placeholder="Search Issues..." class="input input-bordered w-40 md:w-auto" />
+      <button id="searchBtn" class="btn btn-primary">Search</button>
     </div>
   </div>
 
-  <!-- Tabs -->
   <div class="flex gap-2 w-[1100px] mt-6 mx-auto">
     <button id="allBtn" class="btn btn-soft btn-primary w-[120px]">All</button>
     <button id="openBtn" class="btn btn-soft w-[120px]">Open</button>
     <button id="closedBtn" class="btn btn-soft w-[120px]">Closed</button>
   </div>
 
-  <!-- Header -->
   <div class="flex items-center gap-4 w-[1100px] mx-auto mt-6">
-    
     <div class="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100">
       <img src="./assets/Aperture.png" class="w-6 h-6" alt="">
     </div>
-
     <div class="flex flex-col">
       <h1 id="issueCount" class="text-2xl font-semibold text-gray-800">0 Issues</h1>
-      <p class="text-gray-500 text-sm">
-        Track and manage your project issues
-      </p>
+      <p class="text-gray-500 text-sm">Track and manage your project issues</p>
     </div>
-
     <div class="flex ml-auto gap-4">
-      <h2 class="flex items-center gap-1 text-sm">
-        <span class="w-2 h-2 bg-green-500 rounded-full"></span> Open
-      </h2>
-      <h2 class="flex items-center gap-1 text-sm">
-        <span class="w-2 h-2 bg-purple-500 rounded-full"></span> Closed
-      </h2>
+      <h2 class="flex items-center gap-1 text-sm"><span class="w-2 h-2 bg-green-500 rounded-full"></span> Open</h2>
+      <h2 class="flex items-center gap-1 text-sm"><span class="w-2 h-2 bg-purple-500 rounded-full"></span> Closed</h2>
     </div>
-
   </div>
 
-  <!-- Issues Container -->
-  <div id="issuesContainer"
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-[1100px] mx-auto mt-6 pb-10">
-  </div>
-   <div id="issueModal" class="fixed inset-0 bg-black/30 hidden items-center justify-center z-50">
-  
-  <div id="modalCard" class="bg-white w-[500px] rounded-xl shadow-xl p-6 relative">
+  <div id="issuesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-[1100px] mx-auto mt-6 pb-10"></div>
 
-    <!-- Close -->
-    <button id="closeModal" class="absolute top-3 right-4 text-gray-500 text-lg">✖</button>
-
-    <!-- Status + Priority -->
-    <div class="flex items-center gap-2 mb-3">
-      <span id="modalStatusDot"></span>
-
-      <span id="modalPriority" class="px-3 py-1 text-xs rounded-full"></span>
+  <div id="issueModal" class="fixed inset-0 bg-black/30 hidden items-center justify-center z-50">
+    <div id="modalCard" class="bg-white w-[500px] rounded-xl shadow-xl p-6 relative">
+      <button id="closeModal" class="absolute top-3 right-4 text-gray-500 text-lg">✖</button>
+      <div class="flex items-center gap-2 mb-3">
+        <span id="modalStatusDot"></span>
+        <span id="modalPriority" class="px-3 py-1 text-xs rounded-full"></span>
+      </div>
+      <h2 id="modalTitle" class="text-lg font-semibold text-gray-800 mb-2"></h2>
+      <p id="modalDesc" class="text-sm text-gray-500 mb-4"></p>
+      <div id="modalLabels" class="flex gap-2 flex-wrap mb-4"></div>
+      <div class="flex justify-between text-xs text-gray-400">
+        <span id="modalAuthor"></span>
+        <span id="modalDate"></span>
+      </div>
     </div>
-
-    <!-- Title -->
-    <h2 id="modalTitle" class="text-lg font-semibold text-gray-800 mb-2"></h2>
-
-    <!-- Description -->
-    <p id="modalDesc" class="text-sm text-gray-500 mb-4"></p>
-
-    <!-- Labels -->
-    <div id="modalLabels" class="flex gap-2 flex-wrap mb-4"></div>
-
-    <!-- Footer -->
-    <div class="flex justify-between text-xs text-gray-400">
-      <span id="modalAuthor"></span>
-      <span id="modalDate"></span>
-    </div>
-
   </div>
-</div>
-
-
 </section>
 
-
 <script src="index.js"></script>
-
 </body>
 </html>

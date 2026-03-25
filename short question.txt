@@ -1,0 +1,5 @@
+1️⃣ var vs let vs const: var = function-scoped, let = block-scoped, const = block-scoped & cannot reassign.
+2️⃣ Spread (...): Expands arrays/objects or passes elements as arguments.
+3️⃣ map/filter/forEach: map → new array, filter → subset array, forEach → just loops.
+4️⃣ Arrow function: Shorter function syntax, no own this.
+5️⃣ Template literals: Strings with backticks \``, supports ${}` and multi-line.

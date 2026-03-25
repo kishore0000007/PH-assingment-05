@@ -1,35 +1,24 @@
 
- document.getElementById("login_form").addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    if (username === "admin" && password === "admin123") {
-        // Hide login
-        document.getElementById("login_page").classList.add("hidden");
-
-        // Show dashboard
-        document.getElementById("dashboard").classList.remove("hidden");
-    } else {
-        alert("Invalid Username or Password ");
-    }
+  document.getElementById("login_form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  if (username === "admin" && password === "admin123") {
+    document.getElementById("login_page").classList.add("hidden");
+    document.getElementById("dashboard").classList.remove("hidden");
+  } else {
+    alert("Invalid Username or Password");
+  }
 });
 
-
-      // ================= ELEMENTS =================
-// ================= ELEMENTS =================
 const container = document.getElementById("issuesContainer");
 const issueCount = document.getElementById("issueCount");
-
 const allBtn = document.getElementById("allBtn");
 const openBtn = document.getElementById("openBtn");
 const closedBtn = document.getElementById("closedBtn");
 const searchInput = document.getElementById("searchInput");
-
 const modal = document.getElementById("issueModal");
 const closeModal = document.getElementById("closeModal");
-
 const modalTitle = document.getElementById("modalTitle");
 const modalDesc = document.getElementById("modalDesc");
 const modalPriority = document.getElementById("modalPriority");
@@ -38,11 +27,9 @@ const modalLabels = document.getElementById("modalLabels");
 const modalAuthor = document.getElementById("modalAuthor");
 const modalDate = document.getElementById("modalDate");
 
-// ================= STATE =================
 let allIssues = [];
 let currentFilter = "all";
 
-// ================= HELPER: DEBOUNCE =================
 function debounce(func, delay) {
   let timeout;
   return (...args) => {
@@ -51,13 +38,8 @@ function debounce(func, delay) {
   };
 }
 
-// ================= SPINNERS =================
 function showContainerSpinner() {
-  container.innerHTML = `
-    <div class="col-span-3 flex justify-center items-center py-10">
-      <span class="loading loading-dots loading-lg"></span>
-    </div>
-  `;
+  container.innerHTML = `<div class="col-span-3 flex justify-center items-center py-10"><span class="loading loading-dots loading-lg"></span></div>`;
 }
 
 function showModalSpinner() {
@@ -68,41 +50,29 @@ function showModalSpinner() {
   modalLabels.innerHTML = "";
   modalAuthor.innerText = "";
   modalDate.innerText = "";
-  
   modal.classList.remove("hidden");
   modal.classList.add("flex");
 }
 
-// ================= FETCH ISSUES =================
 async function fetchIssues() {
   showContainerSpinner();
-
   try {
     const res = await fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues");
     if (!res.ok) throw new Error("Failed to fetch");
-
     const data = await res.json();
     allIssues = data.data || data;
-
     applyFilters();
   } catch (err) {
-    container.innerHTML = `
-      <p class="text-red-500 text-center col-span-3">
-        Failed to load issues
-      </p>
-    `;
+    container.innerHTML = `<p class="text-red-500 text-center col-span-3">Failed to load issues</p>`;
     console.error(err);
   }
 }
 
-// ================= FETCH SINGLE ISSUE =================
 async function fetchSingleIssue(id) {
   showModalSpinner();
-
   try {
     const res = await fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`);
     if (!res.ok) throw new Error("Failed to fetch issue");
-
     const data = await res.json();
     return data.data || data;
   } catch (err) {
@@ -112,35 +82,20 @@ async function fetchSingleIssue(id) {
   }
 }
 
-// ================= RENDER ISSUES =================
 function renderIssues(issues) {
   container.innerHTML = "";
   issueCount.textContent = `${issues.length} Issues`;
-
   if (issues.length === 0) {
-    container.innerHTML = `
-      <p class="text-gray-500 text-center col-span-3">
-        No issues found 😐
-      </p>
-    `;
+    container.innerHTML = `<p class="text-gray-500 text-center col-span-3">No issues found 😐</p>`;
     return;
   }
-
   issues.forEach(issue => {
     const card = document.createElement("div");
     const isOpen = issue.status === "open";
-
-    card.className = `
-      p-4 rounded-xl bg-white
-      ${isOpen ? "shadow-[0_10px_0_rgba(34,197,94,1)]" : "shadow-[0_10px_0_rgba(168,85,247,1)]"}
-      cursor-pointer
-    `;
-
+    card.className = `p-4 rounded-xl bg-white ${isOpen ? "shadow-[0_10px_0_rgba(34,197,94,1)]" : "shadow-[0_10px_0_rgba(168,85,247,1)]"} cursor-pointer`;
     card.innerHTML = `
       <div class="flex items-center gap-2 mb-2">
-        <span class="text-xs font-semibold px-3 py-1 rounded-full ${getPriorityColor(issue.priority)}">
-          ${issue.priority.toUpperCase()}
-        </span>
+        <span class="text-xs font-semibold px-3 py-1 rounded-full ${getPriorityColor(issue.priority)}">${issue.priority.toUpperCase()}</span>
       </div>
       <h2 class="text-md font-semibold text-gray-800">${issue.title}</h2>
       <p class="text-sm text-gray-500 mt-1">${issue.description}</p>
@@ -150,17 +105,14 @@ function renderIssues(issues) {
         <p>${new Date(issue.createdAt).toLocaleDateString()}</p>
       </div>
     `;
-
     card.addEventListener("click", async () => {
       const fullIssue = await fetchSingleIssue(issue.id);
       if (fullIssue) openModal(fullIssue);
     });
-
     container.appendChild(card);
   });
 }
 
-// ================= LABELS =================
 function renderLabels(labels) {
   return labels.map(label => {
     if (label === "bug") return `<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-600">BUG</span>`;
@@ -169,22 +121,16 @@ function renderLabels(labels) {
   }).join("");
 }
 
-// ================= PRIORITY COLORS =================
 function getPriorityColor(priority) {
   if (priority === "high") return "bg-red-100 text-red-600";
   if (priority === "medium") return "bg-yellow-100 text-yellow-600";
   return "bg-gray-200 text-gray-600";
 }
 
-// ================= FILTER =================
 function applyFilters() {
   let filtered = [...allIssues];
-
-  // status filter
   if (currentFilter === "open") filtered = filtered.filter(i => i.status === "open");
   if (currentFilter === "closed") filtered = filtered.filter(i => i.status === "closed");
-
-  // search filter
   const searchText = searchInput?.value.toLowerCase() || "";
   if (searchText) {
     filtered = filtered.filter(issue =>
@@ -193,36 +139,27 @@ function applyFilters() {
       issue.author.toLowerCase().includes(searchText)
     );
   }
-
   renderIssues(filtered);
 }
 
-// ================= BUTTON ACTIVE =================
 function setActiveButton(activeBtn) {
   allBtn.classList.remove("btn-primary");
   openBtn.classList.remove("btn-primary");
   closedBtn.classList.remove("btn-primary");
-
   activeBtn.classList.add("btn-primary");
 }
 
-// ================= MODAL =================
 function openModal(issue) {
   modal.classList.remove("hidden");
   modal.classList.add("flex");
-
   modalTitle.innerText = issue.title;
   modalDesc.innerText = issue.description;
-
   modalPriority.innerText = issue.priority.toUpperCase();
   modalPriority.className = `px-3 py-1 text-xs rounded-full ${getPriorityColor(issue.priority)}`;
-
   modalStatusDot.innerHTML = issue.status === "open"
     ? `<span class="text-green-500">● Open</span>`
     : `<span class="text-purple-500">● Closed</span>`;
-
   modalLabels.innerHTML = renderLabels(issue.labels);
-
   modalAuthor.innerText = `#${issue.id} by ${issue.author}`;
   modalDate.innerText = new Date(issue.createdAt).toLocaleDateString();
 }
@@ -239,9 +176,6 @@ modal.addEventListener("click", e => {
   }
 });
 
-// ================= EVENT LISTENERS =================
-
-// FILTER BUTTONS
 allBtn.addEventListener("click", () => {
   setActiveButton(allBtn);
   currentFilter = "all";
@@ -263,16 +197,11 @@ closedBtn.addEventListener("click", () => {
   setTimeout(applyFilters, 300);
 });
 
-// SEARCH INPUT
 if (searchInput) {
-  searchInput.addEventListener(
-    "input",
-    debounce(() => {
-      applyFilters(); // filter without spinner for smooth typing
-    }, 300)
-  );
+  searchInput.addEventListener("input", debounce(() => {
+    applyFilters();
+  }, 300));
 }
 
-// ================= INIT =================
 setActiveButton(allBtn);
 fetchIssues();
