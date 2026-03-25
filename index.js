@@ -17,7 +17,9 @@
 });
 */
 
-     const container = document.getElementById("issuesContainer");
+      // ================= ELEMENTS =================
+// ================= ELEMENTS =================
+const container = document.getElementById("issuesContainer");
 const issueCount = document.getElementById("issueCount");
 
 const allBtn = document.getElementById("allBtn");
@@ -25,36 +27,92 @@ const openBtn = document.getElementById("openBtn");
 const closedBtn = document.getElementById("closedBtn");
 const searchInput = document.getElementById("searchInput");
 
+const modal = document.getElementById("issueModal");
+const closeModal = document.getElementById("closeModal");
+
+const modalTitle = document.getElementById("modalTitle");
+const modalDesc = document.getElementById("modalDesc");
+const modalPriority = document.getElementById("modalPriority");
+const modalStatusDot = document.getElementById("modalStatusDot");
+const modalLabels = document.getElementById("modalLabels");
+const modalAuthor = document.getElementById("modalAuthor");
+const modalDate = document.getElementById("modalDate");
+
+// ================= STATE =================
 let allIssues = [];
 let currentFilter = "all";
 
-// ================= FETCH =================
+// ================= HELPER: DEBOUNCE =================
+function debounce(func, delay) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), delay);
+  };
+}
+
+// ================= SPINNERS =================
+function showContainerSpinner() {
+  container.innerHTML = `
+    <div class="col-span-3 flex justify-center items-center py-10">
+      <span class="loading loading-dots loading-lg"></span>
+    </div>
+  `;
+}
+
+function showModalSpinner() {
+  modalTitle.innerText = "Loading...";
+  modalDesc.innerText = "";
+  modalPriority.innerText = "";
+  modalStatusDot.innerHTML = "";
+  modalLabels.innerHTML = "";
+  modalAuthor.innerText = "";
+  modalDate.innerText = "";
+  
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+// ================= FETCH ISSUES =================
 async function fetchIssues() {
+  showContainerSpinner();
+
   try {
     const res = await fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues");
-
     if (!res.ok) throw new Error("Failed to fetch");
 
     const data = await res.json();
-
-    console.log("API Data:", data); // debug
-
     allIssues = data.data || data;
 
-    applyFilters(); // render after fetch
-
-  } catch (error) {
-    console.error("Fetch Error:", error);
-
+    applyFilters();
+  } catch (err) {
     container.innerHTML = `
       <p class="text-red-500 text-center col-span-3">
-        Failed to load issues 
+        Failed to load issues
       </p>
     `;
+    console.error(err);
   }
 }
 
-// ================= RENDER =================
+// ================= FETCH SINGLE ISSUE =================
+async function fetchSingleIssue(id) {
+  showModalSpinner();
+
+  try {
+    const res = await fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`);
+    if (!res.ok) throw new Error("Failed to fetch issue");
+
+    const data = await res.json();
+    return data.data || data;
+  } catch (err) {
+    alert("Failed to load issue details");
+    console.error(err);
+    return null;
+  }
+}
+
+// ================= RENDER ISSUES =================
 function renderIssues(issues) {
   container.innerHTML = "";
   issueCount.textContent = `${issues.length} Issues`;
@@ -66,73 +124,52 @@ function renderIssues(issues) {
       </p>
     `;
     return;
-  } issues.forEach(issue => {
-  const card = document.createElement("div");
+  }
 
-  const isOpen = issue.status === "open";
+  issues.forEach(issue => {
+    const card = document.createElement("div");
+    const isOpen = issue.status === "open";
 
-  card.className = `
-    p-4 rounded-xl bg-white
-    ${isOpen 
-      ? "shadow-[0_10px_0_rgba(34,197,94,1)]" 
-      : "shadow-[0_10px_0_rgba(168,85,247,1)]"}
-    cursor-pointer
-  `;
+    card.className = `
+      p-4 rounded-xl bg-white
+      ${isOpen ? "shadow-[0_10px_0_rgba(34,197,94,1)]" : "shadow-[0_10px_0_rgba(168,85,247,1)]"}
+      cursor-pointer
+    `;
 
-  card.innerHTML = `
-    <div class="flex items-center gap-2 mb-2">
-      <span class="text-xs font-semibold px-3 py-1 rounded-full
-        ${getPriorityColor(issue.priority)}">
-        ${issue.priority.toUpperCase()}
-      </span>
-    </div>
+    card.innerHTML = `
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-xs font-semibold px-3 py-1 rounded-full ${getPriorityColor(issue.priority)}">
+          ${issue.priority.toUpperCase()}
+        </span>
+      </div>
+      <h2 class="text-md font-semibold text-gray-800">${issue.title}</h2>
+      <p class="text-sm text-gray-500 mt-1">${issue.description}</p>
+      <div class="flex gap-2 mt-3 flex-wrap">${renderLabels(issue.labels)}</div>
+      <div class="mt-4 text-xs text-gray-400">
+        <p>#${issue.id} by ${issue.author}</p>
+        <p>${new Date(issue.createdAt).toLocaleDateString()}</p>
+      </div>
+    `;
 
-    <h2 class="text-md font-semibold text-gray-800">
-      ${issue.title}
-    </h2>
+    card.addEventListener("click", async () => {
+      const fullIssue = await fetchSingleIssue(issue.id);
+      if (fullIssue) openModal(fullIssue);
+    });
 
-    <p class="text-sm text-gray-500 mt-1">
-      ${issue.description}
-    </p>
-
-    <div class="flex gap-2 mt-3 flex-wrap">
-      ${renderLabels(issue.labels)}
-    </div>
-
-    <div class="mt-4 text-xs text-gray-400">
-      <p>#${issue.id} by ${issue.author}</p>
-      <p>${new Date(issue.createdAt).toLocaleDateString()}</p>
-    </div>
-  `;
-
-  // ✅ This is where you add it
-  card.addEventListener("click", () => {
-    openModal(issue);
+    container.appendChild(card);
   });
-
-  container.appendChild(card); // finally append
-});
 }
 
 // ================= LABELS =================
 function renderLabels(labels) {
   return labels.map(label => {
-
-    if (label === "bug") {
-      return `<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-600">BUG</span>`;
-    }
-
-    if (label === "help wanted") {
-      return `<span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-600">
-                HELP WANTED
-              </span>`;
-    }
-
+    if (label === "bug") return `<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-600">BUG</span>`;
+    if (label === "help wanted") return `<span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-600">HELP WANTED</span>`;
     return "";
   }).join("");
 }
 
-// ================= PRIORITY =================
+// ================= PRIORITY COLORS =================
 function getPriorityColor(priority) {
   if (priority === "high") return "bg-red-100 text-red-600";
   if (priority === "medium") return "bg-yellow-100 text-yellow-600";
@@ -144,17 +181,11 @@ function applyFilters() {
   let filtered = [...allIssues];
 
   // status filter
-  if (currentFilter === "open") {
-    filtered = filtered.filter(i => i.status === "open");
-  }
+  if (currentFilter === "open") filtered = filtered.filter(i => i.status === "open");
+  if (currentFilter === "closed") filtered = filtered.filter(i => i.status === "closed");
 
-  if (currentFilter === "closed") {
-    filtered = filtered.filter(i => i.status === "closed");
-  }
-
-  // search filter (SAFE)
+  // search filter
   const searchText = searchInput?.value.toLowerCase() || "";
-
   if (searchText) {
     filtered = filtered.filter(issue =>
       issue.title.toLowerCase().includes(searchText) ||
@@ -165,7 +196,6 @@ function applyFilters() {
 
   renderIssues(filtered);
 }
- 
 
 // ================= BUTTON ACTIVE =================
 function setActiveButton(activeBtn) {
@@ -176,119 +206,72 @@ function setActiveButton(activeBtn) {
   activeBtn.classList.add("btn-primary");
 }
 
-// ================= EVENTS =================
-allBtn.addEventListener("click", () => {
-  setActiveButton(allBtn);
-  currentFilter = "all";
-  applyFilters();
-});
-
-openBtn.addEventListener("click", () => {
-  setActiveButton(openBtn);
-  currentFilter = "open";
-  applyFilters();
-});
-
-closedBtn.addEventListener("click", () => {
-  setActiveButton(closedBtn);
-  currentFilter = "closed";
-  applyFilters();
-});
-
-if (searchInput) {
-  searchInput.addEventListener("input", applyFilters);
-}
-function showSpinner() {
-  container.innerHTML = `
-    <div class="col-span-3 flex justify-center items-center py-10">
-      <span class="loading loading-dots loading-lg"></span>
-    </div>
-  `;
-}
-allBtn.addEventListener("click", () => {
-  setActiveButton(allBtn);
-  currentFilter = "all";
-
-  showSpinner(); // 👈 show loader
-
-  setTimeout(() => {
-    applyFilters();
-  }, 300); // small delay for effect
-});
-
-openBtn.addEventListener("click", () => {
-  setActiveButton(openBtn);
-  currentFilter = "open";
-
-  showSpinner();
-
-  setTimeout(() => {
-    applyFilters();
-  }, 300);
-});
-
-closedBtn.addEventListener("click", () => {
-  setActiveButton(closedBtn);
-  currentFilter = "closed";
-
-  showSpinner();
-
-  setTimeout(() => {
-    applyFilters();
-  }, 300);
-});
-
-
- const modal = document.getElementById("issueModal");
-const closeModal = document.getElementById("closeModal");
-
-const modalTitle = document.getElementById("modalTitle");
-const modalDesc = document.getElementById("modalDesc");
-const modalPriority = document.getElementById("modalPriority");
-const modalStatusDot = document.getElementById("modalStatusDot");
-const modalLabels = document.getElementById("modalLabels");
-const modalAuthor = document.getElementById("modalAuthor");
-const modalDate = document.getElementById("modalDate");
-
-// ================= OPEN MODAL =================
+// ================= MODAL =================
 function openModal(issue) {
   modal.classList.remove("hidden");
   modal.classList.add("flex");
 
-  // fill data
   modalTitle.innerText = issue.title;
   modalDesc.innerText = issue.description;
 
-  // priority
   modalPriority.innerText = issue.priority.toUpperCase();
   modalPriority.className = `px-3 py-1 text-xs rounded-full ${getPriorityColor(issue.priority)}`;
 
-  // status dot
   modalStatusDot.innerHTML = issue.status === "open"
     ? `<span class="text-green-500">● Open</span>`
     : `<span class="text-purple-500">● Closed</span>`;
 
-  // labels
   modalLabels.innerHTML = renderLabels(issue.labels);
 
-  // footer
   modalAuthor.innerText = `#${issue.id} by ${issue.author}`;
   modalDate.innerText = new Date(issue.createdAt).toLocaleDateString();
 }
- closeModal.addEventListener("click", () => {
+
+closeModal.addEventListener("click", () => {
   modal.classList.add("hidden");
   modal.classList.remove("flex");
 });
 
-// click outside
-modal.addEventListener("click", (e) => {
+modal.addEventListener("click", e => {
   if (e.target === modal) {
     modal.classList.add("hidden");
     modal.classList.remove("flex");
   }
 });
 
+// ================= EVENT LISTENERS =================
 
+// FILTER BUTTONS
+allBtn.addEventListener("click", () => {
+  setActiveButton(allBtn);
+  currentFilter = "all";
+  showContainerSpinner();
+  setTimeout(applyFilters, 300);
+});
+
+openBtn.addEventListener("click", () => {
+  setActiveButton(openBtn);
+  currentFilter = "open";
+  showContainerSpinner();
+  setTimeout(applyFilters, 300);
+});
+
+closedBtn.addEventListener("click", () => {
+  setActiveButton(closedBtn);
+  currentFilter = "closed";
+  showContainerSpinner();
+  setTimeout(applyFilters, 300);
+});
+
+// SEARCH INPUT
+if (searchInput) {
+  searchInput.addEventListener(
+    "input",
+    debounce(() => {
+      applyFilters(); // filter without spinner for smooth typing
+    }, 300)
+  );
+}
 
 // ================= INIT =================
 setActiveButton(allBtn);
