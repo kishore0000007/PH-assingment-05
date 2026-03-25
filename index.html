@@ -1,25 +1,23 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Git Hub issues tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="styles.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Issues Tracker</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
 </head>
-<body>
-     <body>
+
+<body class="bg-gray-100 font-[Geist]">
 
 <!-- ================= LOGIN PAGE ================= -->
-<section id="login_page">
+<section id="login_page" class="hidden">
 
   <div class="flex flex-col items-center justify-center py-20 gap-4">
-    <img class="mb-4" src="./assets/github-logo.png" alt="">
+    <img class="mb-4 w-16" src="./assets/github-logo.png" alt="">
     <h1 class="text-4xl font-bold">GitHub Issues Tracker</h1>
     <h2 class="text-2xl text-gray-400">Sign in to manage your issues</h2>
   </div>
@@ -46,8 +44,8 @@
 </section>
 
 
- 
-<section id="dashboard" class="">
+<!-- ================= DASHBOARD ================= -->
+<section id="dashboard">
 
   <!-- Navbar -->
   <div class="flex items-center justify-between px-10 py-4 bg-white shadow-sm">
@@ -64,21 +62,21 @@
   </div>
 
   <!-- Tabs -->
-  <div class="flex gap-2 w-[1100px] mt-6 ml-60">
-    <button class="btn btn-soft btn-primary w-[120px]">All</button>
-    <button class="btn btn-soft w-[120px]">Open</button>
-    <button class="btn btn-soft w-[120px]">Closed</button>
+  <div class="flex gap-2 w-[1100px] mt-6 mx-auto">
+    <button id="allBtn" class="btn btn-soft btn-primary w-[120px]">All</button>
+    <button id="openBtn" class="btn btn-soft w-[120px]">Open</button>
+    <button id="closedBtn" class="btn btn-soft w-[120px]">Closed</button>
   </div>
 
   <!-- Header -->
-  <div class="flex items-center gap-4 w-[1100px] ml-60 mt-6">
+  <div class="flex items-center gap-4 w-[1100px] mx-auto mt-6">
     
     <div class="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100">
       <img src="./assets/Aperture.png" class="w-6 h-6" alt="">
     </div>
 
     <div class="flex flex-col">
-      <h1 class="text-2xl font-semibold text-gray-800">50 Issues</h1>
+      <h1 id="issueCount" class="text-2xl font-semibold text-gray-800">0 Issues</h1>
       <p class="text-gray-500 text-sm">
         Track and manage your project issues
       </p>
@@ -95,8 +93,15 @@
 
   </div>
 
+  <!-- Issues Container -->
+  <div id="issuesContainer"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-[1100px] mx-auto mt-6 pb-10">
+  </div>
+
 </section>
 
+
 <script src="index.js"></script>
+
 </body>
 </html>
