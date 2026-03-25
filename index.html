@@ -57,7 +57,7 @@
     <div class="flex items-center gap-3">
       <input type="text" placeholder="Search Issues..."
         class="input input-bordered w-40 md:w-auto" />
-      <button class="btn btn-primary">+ New Issue</button>
+      <button class="btn btn-primary">Search</button>
     </div>
   </div>
 
@@ -97,6 +97,38 @@
   <div id="issuesContainer"
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-[1100px] mx-auto mt-6 pb-10">
   </div>
+   <div id="issueModal" class="fixed inset-0 bg-black/30 hidden items-center justify-center z-50">
+  
+  <div id="modalCard" class="bg-white w-[500px] rounded-xl shadow-xl p-6 relative">
+
+    <!-- Close -->
+    <button id="closeModal" class="absolute top-3 right-4 text-gray-500 text-lg">✖</button>
+
+    <!-- Status + Priority -->
+    <div class="flex items-center gap-2 mb-3">
+      <span id="modalStatusDot"></span>
+
+      <span id="modalPriority" class="px-3 py-1 text-xs rounded-full"></span>
+    </div>
+
+    <!-- Title -->
+    <h2 id="modalTitle" class="text-lg font-semibold text-gray-800 mb-2"></h2>
+
+    <!-- Description -->
+    <p id="modalDesc" class="text-sm text-gray-500 mb-4"></p>
+
+    <!-- Labels -->
+    <div id="modalLabels" class="flex gap-2 flex-wrap mb-4"></div>
+
+    <!-- Footer -->
+    <div class="flex justify-between text-xs text-gray-400">
+      <span id="modalAuthor"></span>
+      <span id="modalDate"></span>
+    </div>
+
+  </div>
+</div>
+
 
 </section>
 

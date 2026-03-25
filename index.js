@@ -66,50 +66,52 @@ function renderIssues(issues) {
       </p>
     `;
     return;
-  }
+  } issues.forEach(issue => {
+  const card = document.createElement("div");
 
-  issues.forEach(issue => {
-    const card = document.createElement("div");
+  const isOpen = issue.status === "open";
 
-    const isOpen = issue.status === "open";
+  card.className = `
+    p-4 rounded-xl bg-white
+    ${isOpen 
+      ? "shadow-[0_10px_0_rgba(34,197,94,1)]" 
+      : "shadow-[0_10px_0_rgba(168,85,247,1)]"}
+    cursor-pointer
+  `;
 
-    card.className = `
-      p-4 rounded-xl bg-white
-      ${isOpen 
-        ? "shadow-[0_10px_0_rgba(34,197,94,1)]" 
-        : "shadow-[0_10px_0_rgba(168,85,247,1)]"}
-    `;
+  card.innerHTML = `
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-xs font-semibold px-3 py-1 rounded-full
+        ${getPriorityColor(issue.priority)}">
+        ${issue.priority.toUpperCase()}
+      </span>
+    </div>
 
-    card.innerHTML = `
-      <div class="flex items-center gap-2 mb-2">
-         
+    <h2 class="text-md font-semibold text-gray-800">
+      ${issue.title}
+    </h2>
 
-        <span class="text-xs font-semibold px-3 py-1 rounded-full
-          ${getPriorityColor(issue.priority)}">
-          ${issue.priority.toUpperCase()}
-        </span>
-      </div>
+    <p class="text-sm text-gray-500 mt-1">
+      ${issue.description}
+    </p>
 
-      <h2 class="text-md font-semibold text-gray-800">
-        ${issue.title}
-      </h2>
+    <div class="flex gap-2 mt-3 flex-wrap">
+      ${renderLabels(issue.labels)}
+    </div>
 
-      <p class="text-sm text-gray-500 mt-1">
-        ${issue.description}
-      </p>
+    <div class="mt-4 text-xs text-gray-400">
+      <p>#${issue.id} by ${issue.author}</p>
+      <p>${new Date(issue.createdAt).toLocaleDateString()}</p>
+    </div>
+  `;
 
-      <div class="flex gap-2 mt-3 flex-wrap">
-        ${renderLabels(issue.labels)}
-      </div>
-
-      <div class="mt-4 text-xs text-gray-400">
-        <p>#${issue.id} by ${issue.author}</p>
-        <p>${new Date(issue.createdAt).toLocaleDateString()}</p>
-      </div>
-    `;
-
-    container.appendChild(card);
+  // ✅ This is where you add it
+  card.addEventListener("click", () => {
+    openModal(issue);
   });
+
+  container.appendChild(card); // finally append
+});
 }
 
 // ================= LABELS =================
@@ -163,6 +165,7 @@ function applyFilters() {
 
   renderIssues(filtered);
 }
+ 
 
 // ================= BUTTON ACTIVE =================
 function setActiveButton(activeBtn) {
@@ -234,6 +237,57 @@ closedBtn.addEventListener("click", () => {
     applyFilters();
   }, 300);
 });
+
+
+ const modal = document.getElementById("issueModal");
+const closeModal = document.getElementById("closeModal");
+
+const modalTitle = document.getElementById("modalTitle");
+const modalDesc = document.getElementById("modalDesc");
+const modalPriority = document.getElementById("modalPriority");
+const modalStatusDot = document.getElementById("modalStatusDot");
+const modalLabels = document.getElementById("modalLabels");
+const modalAuthor = document.getElementById("modalAuthor");
+const modalDate = document.getElementById("modalDate");
+
+// ================= OPEN MODAL =================
+function openModal(issue) {
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+
+  // fill data
+  modalTitle.innerText = issue.title;
+  modalDesc.innerText = issue.description;
+
+  // priority
+  modalPriority.innerText = issue.priority.toUpperCase();
+  modalPriority.className = `px-3 py-1 text-xs rounded-full ${getPriorityColor(issue.priority)}`;
+
+  // status dot
+  modalStatusDot.innerHTML = issue.status === "open"
+    ? `<span class="text-green-500">● Open</span>`
+    : `<span class="text-purple-500">● Closed</span>`;
+
+  // labels
+  modalLabels.innerHTML = renderLabels(issue.labels);
+
+  // footer
+  modalAuthor.innerText = `#${issue.id} by ${issue.author}`;
+  modalDate.innerText = new Date(issue.createdAt).toLocaleDateString();
+}
+ closeModal.addEventListener("click", () => {
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+});
+
+// click outside
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  }
+});
+
 
 
 // ================= INIT =================
